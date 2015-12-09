@@ -12,6 +12,7 @@ import (
 
 func HelloServer(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "hello world!\n")
+
 	// https://golang.org/pkg/net/http/#Request
 	// https://golang.org/pkg/crypto/tls/#ConnectionState
 	// https://golang.org/pkg/crypto/x509/#Certificate
@@ -43,7 +44,7 @@ func main() {
 	tlsConfig.BuildNameToCertificate()
 
 	server := &http.Server{
-		Addr: ":8080",
+		Addr:      ":8080",
 		TLSConfig: tlsConfig,
 	}
 
