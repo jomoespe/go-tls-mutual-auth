@@ -1,0 +1,6 @@
+client/*
+!client/*.go
+server/*
+!server/*.go
+certgen/*
+!certgen/*.go
