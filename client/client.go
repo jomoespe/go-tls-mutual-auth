@@ -11,13 +11,13 @@ import (
 
 func main() {
 	// load client cert
-	cert, err := tls.LoadX509KeyPair("cert/client/selfsigned.crt", "cert/client/selfsigned.key")
+	cert, err := tls.LoadX509KeyPair("client.crt", "client.key")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// load CA cert
-	caCert, err := ioutil.ReadFile("cert/server/selfsigned.crt")
+	caCert, err := ioutil.ReadFile("server.crt")
 	if err != nil {
 		log.Fatal(err)
 	}

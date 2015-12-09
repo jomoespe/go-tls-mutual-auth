@@ -24,7 +24,7 @@ func HelloServer(w http.ResponseWriter, req *http.Request) {
 func main() {
 	http.HandleFunc("/hello", HelloServer)
 
-	caCert, err := ioutil.ReadFile("cert/client/selfsigned.crt")
+	caCert, err := ioutil.ReadFile("client.crt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,5 +48,5 @@ func main() {
 		TLSConfig: tlsConfig,
 	}
 
-	server.ListenAndServeTLS("cert/server/selfsigned.crt", "cert/server/selfsigned.key") // private cert
+	server.ListenAndServeTLS("server.crt", "server.key") // private cert
 }
