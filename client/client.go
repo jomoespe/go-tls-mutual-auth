@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"golang.org/x/net/http2"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -31,8 +32,10 @@ func main() {
 		RootCAs:      caCertPool,
 	}
 	tlsConfig.BuildNameToCertificate()
-	transport := &http.Transport{TLSClientConfig: tlsConfig}
-	client := &http.Client{Transport: transport}
+
+	client := &http.Client{
+		Transport: &http2.Transport{TLSClientConfig: tlsConfig},
+	}
 
 	resp, err := client.Get("https://localhost:8080/hello")
 	if err != nil {
@@ -40,4 +43,5 @@ func main() {
 	}
 	contents, err := ioutil.ReadAll(resp.Body)
 	fmt.Printf("%s\n", string(contents))
+
 }

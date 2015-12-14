@@ -4,21 +4,24 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"golang.org/x/net/http2"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-func HelloServer(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "hello world!\n")
+func HelloServer(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	io.WriteString(w, `{"protocol": "`+r.Proto+`","common name": "`+r.TLS.PeerCertificates[0].Subject.CommonName+`"}`)
+	fmt.Printf("protocol: %s, common name: %s\n", r.Proto, r.TLS.PeerCertificates[0].Subject.CommonName)
 
 	// https://golang.org/pkg/net/http/#Request
 	// https://golang.org/pkg/crypto/tls/#ConnectionState
 	// https://golang.org/pkg/crypto/x509/#Certificate
 	//fmt.Fprintf(w, "\tpeer certificates=%d\n", len(req.TLS.PeerCertificates))
 	// Get the peer get the subject common name from tls request peer certificate
-	fmt.Fprintf(w, "\tCommon name=%s\n", req.TLS.PeerCertificates[0].Subject.CommonName)
+	//fmt.Fprintf(w, "\tCommon name=%s\n", req.TLS.PeerCertificates[0].Subject.CommonName)
 }
 
 func main() {
@@ -47,6 +50,6 @@ func main() {
 		Addr:      ":8080",
 		TLSConfig: tlsConfig,
 	}
-
-	server.ListenAndServeTLS("server.crt", "server.key") // private cert
+	http2.ConfigureServer(server, nil)
+	server.ListenAndServeTLS("server.crt", "server.key")
 }
