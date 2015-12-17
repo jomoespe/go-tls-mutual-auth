@@ -1,0 +1,19 @@
+service0:
+  build: server
+
+service1:
+  build: server
+
+service2:
+  build: server
+
+balancer:
+  image: haproxy:1.6.2
+  links:
+    - service0
+    - service1
+    - service2
+  volumes:
+    - ./haproxy:/usr/local/etc/haproxy/:ro
+  ports:
+    - "8080:8080"

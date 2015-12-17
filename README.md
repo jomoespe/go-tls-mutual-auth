@@ -20,3 +20,10 @@ Ejecutar el servidor
 Ejecutar el cliente
 
     go run client/client.go
+
+
+## Compilación del servidor
+
+Para poder dockerizar el servidor para ser dockerizado ha de compilarse estáticamente.
+
+    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server server.go
