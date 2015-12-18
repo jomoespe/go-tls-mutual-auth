@@ -14,7 +14,8 @@ import (
 func HelloServer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, `{"protocol": "`+r.Proto+`","common name": "`+r.TLS.PeerCertificates[0].Subject.CommonName+`"}`)
-	fmt.Printf("protocol: %s, common name: %s\n", r.Proto, r.TLS.PeerCertificates[0].Subject.CommonName)
+	fmt.Printf("remote: %s, request uri: %s, protocol: %s, subject name: %s\n",
+		r.RemoteAddr, r.RequestURI, r.Proto, r.TLS.PeerCertificates[0].Subject.CommonName)
 
 	// https://golang.org/pkg/net/http/#Request
 	// https://golang.org/pkg/crypto/tls/#ConnectionState
