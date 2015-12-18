@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"flag"
 	"fmt"
 	"golang.org/x/net/http2"
 	"io/ioutil"
@@ -11,6 +12,10 @@ import (
 )
 
 func main() {
+	// process parameters
+	totalRequest := flag.Int("request", 1, "How many request perform.")
+	flag.Parse()
+
 	// load client cert
 	cert, err := tls.LoadX509KeyPair("client.crt", "client.key")
 	if err != nil {
@@ -33,15 +38,16 @@ func main() {
 	}
 	tlsConfig.BuildNameToCertificate()
 
-	client := &http.Client{
-		Transport: &http2.Transport{TLSClientConfig: tlsConfig},
-	}
+	for i := 0; i < *totalRequest; i++ {
+		client := &http.Client{
+			Transport: &http2.Transport{TLSClientConfig: tlsConfig},
+		}
 
-	resp, err := client.Get("https://localhost:8080/hello")
-	if err != nil {
-		fmt.Println(err)
+		resp, err := client.Get("https://localhost:8080/hello")
+		if err != nil {
+			fmt.Println(err)
+		}
+		contents, err := ioutil.ReadAll(resp.Body)
+		fmt.Printf("%s\n", string(contents))
 	}
-	contents, err := ioutil.ReadAll(resp.Body)
-	fmt.Printf("%s\n", string(contents))
-
 }
