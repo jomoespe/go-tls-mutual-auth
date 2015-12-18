@@ -17,7 +17,7 @@ import (
 const (
 	ORGANIZATION_DEFAULT = "My Organization"
 	COMMON_NAME_DEFAULT  = "localhost"
-	DURATION_DEFAULT     = 365
+	DURATION_DEFAULT     = 90
 	CERTIFICATE_DEFAULT  = "selfsigned.crt"
 	KEY_DEFAULT          = "selfsigned.key"
 	IS_CLIENT_DEFAULT    = false
