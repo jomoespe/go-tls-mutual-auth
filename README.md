@@ -1,9 +1,6 @@
 Balanced HTTP2 REST service with TLS mutual authentication
 ==========================================================
 
-Siguiendo el artículo [SSL/TLS Mutual Auth in GoLang](http://www.bite-code.com/2015/06/25/tls-mutual-auth-in-golang/)
-
-
 ## Goals
 
 This project realize two goals:
@@ -83,3 +80,7 @@ Both samples are the certificates generated in sample
 
     CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server server.go
 
+
+## References
+
+  - [SSL/TLS Mutual Auth in GoLang](http://www.bite-code.com/2015/06/25/tls-mutual-auth-in-golang/)
