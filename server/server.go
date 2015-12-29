@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-func HelloServer(w http.ResponseWriter, r *http.Request) {
+func SampleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, `{"protocol": "`+r.Proto+`","common name": "`+r.TLS.PeerCertificates[0].Subject.CommonName+`"}`)
 	fmt.Printf("remote: %s, request uri: %s, protocol: %s, subject name: %s\n",
@@ -26,7 +26,7 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/hello", HelloServer)
+	http.HandleFunc("/sample", SampleHandler)
 
 	caCert, err := ioutil.ReadFile("client.crt")
 	if err != nil {
@@ -48,7 +48,7 @@ func main() {
 	tlsConfig.BuildNameToCertificate()
 
 	server := &http.Server{
-		Addr:      ":8080",
+		Addr:      ":8443",
 		TLSConfig: tlsConfig,
 	}
 	http2.ConfigureServer(server, nil)

@@ -16,4 +16,4 @@ balancer:
   volumes:
     - ./haproxy:/usr/local/etc/haproxy/:ro
   ports:
-    - "8080:8080"
+    - "8443:8443"
