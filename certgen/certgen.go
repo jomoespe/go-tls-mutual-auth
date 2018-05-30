@@ -26,7 +26,7 @@ const (
 func main() {
 	organization := flag.String("org", ORGANIZATION_DEFAULT, "CA Organization nane")
 	commonName := flag.String("name", COMMON_NAME_DEFAULT, "The subject name. Usually the DNS server name")
-	duration := flag.Int("duration", DURATION_DEFAULT, "How log the certificate will be valid.")
+	duration := flag.Int("duration", DURATION_DEFAULT, "How long the certificate will be valid.")
 	certFilename := flag.String("cert", CERTIFICATE_DEFAULT, "Certificate filename.")
 	keyFilename := flag.String("key", KEY_DEFAULT, "Privake Key filename.")
 	isClientCert := flag.Bool("client", IS_CLIENT_DEFAULT, "If the certificate usage is client. Default is false (server usage)")
