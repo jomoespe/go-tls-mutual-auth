@@ -5,3 +5,8 @@ server/*
 !server/Dockerfile
 certgen/*
 !certgen/*.go
+
+# Default generated certificates
+selfsigned.crt
+selfsigned.key
+
