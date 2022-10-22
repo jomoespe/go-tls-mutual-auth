@@ -5,10 +5,12 @@ import (
 	"crypto/x509"
 	"flag"
 	"fmt"
-	"golang.org/x/net/http2"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+
+	"golang.org/x/net/http2"
 )
 
 func main() {
@@ -43,11 +45,17 @@ func main() {
 			Transport: &http2.Transport{TLSClientConfig: tlsConfig},
 		}
 
-		resp, err := client.Get("https://localhost:8443/sample")
+		resp, err := client.Get("https://localhost:8443/hello")
 		if err != nil {
 			fmt.Println(err)
+			os.Exit(1)
 		}
 		contents, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(2)
+		}
+
 		fmt.Printf("%s\n", string(contents))
 	}
 }

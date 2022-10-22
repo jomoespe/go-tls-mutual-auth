@@ -4,18 +4,24 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"golang.org/x/net/http2"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+
+	"golang.org/x/net/http2"
 )
 
-func SampleHandler(w http.ResponseWriter, r *http.Request) {
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Receided request from %s\n", r.RemoteAddr)
+	fmt.Printf("  Number of client certificates: %d\n", len(r.TLS.PeerCertificates))
+	for i, c := range r.TLS.PeerCertificates {
+		fmt.Printf("  Cert number %d\n", i)
+		printCert(c)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	io.WriteString(w, `{"protocol": "`+r.Proto+`","common name": "`+r.TLS.PeerCertificates[0].Subject.CommonName+`"}`)
-	fmt.Printf("remote: %s, request uri: %s, protocol: %s, subject name: %s\n",
-		r.RemoteAddr, r.RequestURI, r.Proto, r.TLS.PeerCertificates[0].Subject.CommonName)
+	io.WriteString(w, fmt.Sprintf("{\"protocol\": \"%s\", \"commonName\": \"%s\"}", r.Proto, r.TLS.PeerCertificates[0].Subject.CommonName))
 
 	// https://golang.org/pkg/net/http/#Request
 	// https://golang.org/pkg/crypto/tls/#ConnectionState
@@ -25,10 +31,15 @@ func SampleHandler(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w, "\tCommon name=%s\n", req.TLS.PeerCertificates[0].Subject.CommonName)
 }
 
-func main() {
-	http.HandleFunc("/sample", SampleHandler)
+func livenessHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
 
-	caCert, err := ioutil.ReadFile("client.crt")
+func main() {
+	http.HandleFunc("/hello", helloHandler)
+	http.HandleFunc("/healthy", livenessHandler)
+
+	caCert, err := os.ReadFile("client.crt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,20 +48,41 @@ func main() {
 
 	// setup HTTPS client (¿client? ¿wtf?)
 	tlsConfig := &tls.Config{
-		ClientCAs: caCertPool,
-		// NoClientCent
-		// RequestClientCert
-		// RequiredAnyClientCert
-		// VerifyClientCartIfGiven
-		// RequireAndVerifyClientCert
+		ClientCAs:  caCertPool,
 		ClientAuth: tls.RequireAndVerifyClientCert,
+		// other possible values:
+		//   tls.NoClientCent
+		//   tls.RequestClientCert
+		//   tls.RequiredAnyClientCert
+		//   tls.VerifyClientCartIfGiven
+		//   tls.RequireAndVerifyClientCert
 	}
-	tlsConfig.BuildNameToCertificate()
 
 	server := &http.Server{
 		Addr:      ":8443",
 		TLSConfig: tlsConfig,
 	}
 	http2.ConfigureServer(server, nil)
+	fmt.Printf("TLS Muthual auth server listening on port %s\n", server.Addr)
 	server.ListenAndServeTLS("server.crt", "server.key")
+}
+
+func printCert(c *x509.Certificate) {
+	fmt.Printf("    Subject: %v\n", c.Subject)
+	fmt.Printf("    Issuer: %v\n", c.Issuer)
+	fmt.Printf("    IPAddresses: %v\n", c.IPAddresses)
+	fmt.Printf("    Email addresses: %v\n", c.EmailAddresses)
+	fmt.Printf("    Total extensions: %d\n", len(c.Extensions))
+	for _, ext := range c.Extensions {
+		fmt.Printf("      %s: %x\n", ext.Id, ext.Value[:])
+	}
+	fmt.Printf("    Total extra extensions: %d\n", len(c.ExtraExtensions))
+	for _, ext := range c.ExtraExtensions {
+		fmt.Printf("      %s: %x\n", ext.Id, ext.Value[:])
+	}
+	fmt.Printf("    Is CA: %v\n", c.IsCA)
+	fmt.Printf("    Issuing certificate URL: %v\n", c.IssuingCertificateURL)
+	fmt.Printf("    Serial number: %v\n", c.SerialNumber)
+	fmt.Printf("    URIs: %v\n", c.URIs)
+	fmt.Printf("    Version: %v\n", c.Version)
 }
