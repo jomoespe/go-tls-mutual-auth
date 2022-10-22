@@ -33,7 +33,6 @@ This process it performed with certificates interchange. That is both client and
 Because we are realizing client authentication and identification in the service process, we cannot put an HTTP/S (layer 7) reverse proxy/load balancer in front of a service instances. This is why we configure a TCP (layer 4) reverse proxy/load balancer.
 
 
-
 ## SSL/TSL mutual authentication
 
 The project have three main components:
@@ -42,44 +41,52 @@ The project have three main components:
   - The client.
   - A certificate generation tool.
 
+### Build
+
+To build all components
+
+```bash
+make clean all 
+```
+
+There are make targets for each component.
+
+```bash
+make [cert] [serverd] [tlsclient]
+```
 
 ### Certificate generation tool
 
 Generate certificate:
 
-    go run certgen/certgen.go [-org <"Organization name">] [-name <"subject name">] [-duration <duration>] [-cert <certificate filename>] [-key <private key filename>] [-client [<true|false>]] [ip|servers....]
-
+```bash
+    ./cert [-org <"Organization name">] [-name <"subject name">] [-duration <duration>] [-cert <certificate filename>] [-key <private key filename>] [-client [<true|false>]] [ip|servers....]
+```
 
 Example: generate a server certificate for 127.0.0.1 and localhost.localdomain
 
-    go run certgen/certgen.go -cert server.crt -key server.key 127.0.0.1 localhost.localdomain
-
+```bash
+./cert -cert server.crt -key server.key 127.0.0.1 localhost.localdomain
+```
 
 Example: generate a client certificate with client_1 name
 
-    go run certgen/certgen.go -client -cert client.crt -key client.key -name=client_1
-
-
-Both samples are the certificates generated in sample
-
+```bash
+./cert -client -cert client.crt -key client.key -name=client_1
+```
 
 ### The server
 
-    go run server/server.go
-
+```bash
+./serverd
+```
 
 ### The client
 
-    go run client/client.go [-request=<numbre_of_request>]
 
-
-## Load balancing 
-
-
-### Build service binary
-
-    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server server.go
-
+```bash
+./tlsclient
+```
 
 ## References
 

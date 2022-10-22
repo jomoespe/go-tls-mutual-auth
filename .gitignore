@@ -6,7 +6,15 @@ server/*
 certgen/*
 !certgen/*.go
 
-# Default generated certificates
+# project binary files
+serverd
+tlsclient
+cert
+
+# generated certificates
 selfsigned.crt
 selfsigned.key
-
+client.crt
+client.key
+server.crt
+server.key
