@@ -9,6 +9,7 @@ certgen/*
 # project binary files
 serverd
 tlsclient
+cert
 
 # generated certificates
 selfsigned.crt
